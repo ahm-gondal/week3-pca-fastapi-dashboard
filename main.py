@@ -42,7 +42,7 @@ def build_feature_row(numeric: dict, load_type: str, day_of_week: str) -> pd.Dat
 
 @app.get("/")
 def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(request, "index.html")
 
 
 @app.get("/dashboard")
@@ -54,15 +54,16 @@ def dashboard(request: Request):
         ("cumulative_variance.png", "PCA — Cumulative Explained Variance (95% at 10 components)"),
     ]
     return templates.TemplateResponse(
-        "dashboard.html", {"request": request, "charts": charts}
+        request, "dashboard.html", {"charts": charts}
     )
 
 
 @app.get("/predict")
 def predict_form(request: Request):
     return templates.TemplateResponse(
+        request,
         "predict.html",
-        {"request": request, "load_types": LOAD_TYPES, "days": DAYS, "prediction": None},
+        {"load_types": LOAD_TYPES, "days": DAYS, "prediction": None},
     )
 
 
@@ -97,9 +98,9 @@ def predict(
     X = build_feature_row(numeric, load_type, day_of_week)
     prediction = float(pipeline.predict(X)[0])
     return templates.TemplateResponse(
+        request,
         "predict.html",
         {
-            "request": request,
             "load_types": LOAD_TYPES,
             "days": DAYS,
             "prediction": round(prediction, 2),
