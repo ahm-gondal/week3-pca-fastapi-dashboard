@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Prediction — Steel Plant Energy</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; margin: 0; background: #f4f6f8; color: #222; }
+    nav { background: #1f3a5f; padding: 14px 30px; }
+    nav a { color: #fff; text-decoration: none; margin-right: 25px; font-weight: bold; }
+    nav a:hover { text-decoration: underline; }
+    .container { max-width: 800px; margin: 40px auto; background: #fff; padding: 30px 40px;
+                 border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    h1 { color: #1f3a5f; }
+    form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; }
+    label { font-weight: bold; font-size: 14px; display: block; margin-bottom: 4px; }
+    input, select { width: 100%; padding: 8px; border: 1px solid #bbb; border-radius: 4px; box-sizing: border-box; }
+    .full { grid-column: 1 / span 2; }
+    button { grid-column: 1 / span 2; background: #1f3a5f; color: #fff; padding: 12px;
+             border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+    button:hover { background: #2c5185; }
+    .result { grid-column: 1 / span 2; background: #e6f4ea; border-left: 5px solid #2e7d32;
+              padding: 18px 22px; margin-top: 10px; border-radius: 4px; font-size: 20px; }
+    .hint { font-size: 12px; color: #666; font-weight: normal; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/predict">Prediction</a>
+  </nav>
+  <div class="container">
+    <h1>🔮 Predict Energy Consumption</h1>
+    <p>Enter the plant's operating parameters. The deployed pipeline
+       (Scaler → PCA → Random Forest) returns the predicted usage in kWh.</p>
+    <form method="post" action="/predict">
+      <div>
+        <label>Lagging Reactive Power (kVarh) <span class="hint">e.g. 13.0</span></label>
+        <input type="number" step="any" name="lagging_reactive" value="13.0" required>
+      </div>
+      <div>
+        <label>Leading Reactive Power (kVarh) <span class="hint">e.g. 0.0</span></label>
+        <input type="number" step="any" name="leading_reactive" value="0.0" required>
+      </div>
+      <div>
+        <label>Lagging Power Factor <span class="hint">0–100, e.g. 73</span></label>
+        <input type="number" step="any" name="lagging_pf" value="73" required>
+      </div>
+      <div>
+        <label>Leading Power Factor <span class="hint">0–100, e.g. 100</span></label>
+        <input type="number" step="any" name="leading_pf" value="100" required>
+      </div>
+      <div>
+        <label>NSM — seconds from midnight <span class="hint">0–86400, e.g. 32400 = 9 AM</span></label>
+        <input type="number" step="any" name="nsm" value="32400" required>
+      </div>
+      <div>
+        <label>Hour of day <span class="hint">0–23</span></label>
+        <input type="number" min="0" max="23" name="hour" value="9" required>
+      </div>
+      <div>
+        <label>Day number <span class="hint">0 = Monday … 6 = Sunday</span></label>
+        <input type="number" min="0" max="6" name="day_num" value="2" required>
+      </div>
+      <div>
+        <label>Month <span class="hint">1–12</span></label>
+        <input type="number" min="1" max="12" name="month" value="7" required>
+      </div>
+      <div>
+        <label>Is Weekend <span class="hint">0 = no, 1 = yes</span></label>
+        <input type="number" min="0" max="1" name="is_weekend" value="0" required>
+      </div>
+      <div>
+        <label>Power Factor Ratio <span class="hint">leading PF ÷ lagging PF</span></label>
+        <input type="number" step="any" name="pf_ratio" value="1.37" required>
+      </div>
+      <div>
+        <label>Load Type</label>
+        <select name="load_type">
+          {% for lt in load_types %}
+            <option value="{{ lt }}">{{ lt.replace('_', ' ') }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>Day of Week</label>
+        <select name="day_of_week">
+          {% for d in days %}
+            <option value="{{ d }}">{{ d }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit">Predict Energy Consumption</button>
+      {% if prediction is not none %}
+        <div class="result">
+          ⚡ Predicted energy consumption: <strong>{{ prediction }} kWh</strong>
+        </div>
+      {% endif %}
+    </form>
+  </div>
+</body>
+</html>

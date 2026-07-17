@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard — Steel Plant Energy</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; margin: 0; background: #f4f6f8; color: #222; }
+    nav { background: #1f3a5f; padding: 14px 30px; }
+    nav a { color: #fff; text-decoration: none; margin-right: 25px; font-weight: bold; }
+    nav a:hover { text-decoration: underline; }
+    .container { max-width: 1000px; margin: 40px auto; background: #fff; padding: 30px 40px;
+                 border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    h1, h2 { color: #1f3a5f; }
+    img { max-width: 100%; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 30px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/predict">Prediction</a>
+  </nav>
+  <div class="container">
+    <h1>📊 EDA Dashboard</h1>
+    <p>Key insights from the Steel Industry Energy Consumption dataset (35,040 readings, 2018).</p>
+    {% for file, title in charts %}
+      <h2>{{ title }}</h2>
+      <img src="/static/{{ file }}" alt="{{ title }}">
+    {% endfor %}
+  </div>
+</body>
+</html>
